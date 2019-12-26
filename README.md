@@ -1,22 +1,36 @@
-# TonUINO
-Die DIY Musikbox (nicht nur) für Kinder
+# JoniBOX
+Basierend auf TonUINO, die DIY Musikbox (nicht nur) für Kinder
+
+## Motivation zum Fork
+Die Box sollte nur spielen, wenn eine Karte aufgelegt ist.
+So ist die Bedeutung und Funktion der Karten auch für die ganz Kleinen zu verstehen.
+
+Es gibt dazu einen [Pull Request](https://github.com/xfjx/TonUINO/pull/36) für den DEV Branch von [mcgreg1](https://github.com/mcgreg1).
+Die Umsetzung habe ich zum Teil übernommen.
+Der DEV Branch enthält viel Code für die Modifier Karten, daran habe ich zur Zeit kein Interesse.
+
+Insgesamt fehlt mir im Code eine klare Linie, sodass ich auch einiges umstrukturieren möchte.
+Erfahrungsgemäß erleichtert dies Erweiterungen enorm und natürlich auch spätere Änderungen, wenn man den Code einige Zeit nicht angeschaut hat.
 
 
-# Change Log
+# Bereits umgesetzte Änderungen gegenüber TonUINO
+Stand 26.12.2019
+- Wiedergabe hält an, wenn die Karte entfernt wird
+- Dazu wird alle 150 ms der Kartenleser abgefragt
+- Maßnahmen zur Verlängerung der Akku Laufzeit:
+    - Nach 20 Minuten wird der DFPlayerMini in den Sleep Modus versetzt
+    - Weiterhin erfolgt die Abfrage des Kartenlesers nur noch alle 1,5 s
+- Refactoring der Software begonnen
 
-## Version 2.01 (01.11.2018)
-- kleiner Fix um die Probleme beim Anlernen von Karten zu reduzieren
-
-## Version 2.0 (26.08.2018)
-
-- Lautstärke wird nun über einen langen Tastendruck geändert
-- bei kurzem Tastendruck wird der nächste / vorherige Track abgespielt (je nach Wiedergabemodus nicht verfügbar)
-- Während der Wiedergabe wird bei langem Tastendruck auf Play/Pause die Nummer des aktuellen Tracks angesagt
-- Neuer Wiedergabemodus: **Einzelmodus**
-  Eine Karte kann mit einer einzelnen Datei aus einem Ordner verknüpft werden. Dadurch sind theoretisch 25000 verschiedene Karten für je eine Datei möglich
-- Neuer Wiedergabemodus: **Hörbuch-Modus**
-  Funktioniert genau wie der Album-Modus. Zusätzlich wir der Fortschritt im EEPROM des Arduinos gespeichert und beim nächsten mal wird bei der jeweils letzten Datei neu gestartet. Leider kann nur der Track, nicht die Stelle im Track gespeichert werden
-- Um mehr als 100 Karten zu unterstützen wird die Konfiguration der Karten nicht mehr im EEPROM gespeichert sondern direkt auf den Karten - die Karte muss daher beim Anlernen aufgelegt bleiben!
-- Durch einen langen Druck auf Play/Pause kann **eine Karte neu konfiguriert** werden
-- In den Auswahldialogen kann durch langen Druck auf die Lautstärketasten jeweils um 10 Ordner oder Dateien vor und zurück gesprungen werden
-- Reset des MP3 Moduls beim Start entfernt - war nicht nötig und hat "Krach" gemacht
+# Geplante Änderungen
+- Weiteres Refactoring, Player und Kartenleser in separaten Files
+    - Steigerung der Übersichtlichkeit
+- Abspielen ganzer Ordner über DFPlayerMini Methoden ohne nextTrack(),
+  falls möglich auch Shuffle über das MP3 Modul
+    - Kürzere Pausen zwischen den Tracks
+    - Vereinfachung des Codes
+- Weitere Ansagen (z. B. beim Einschalten), ggf. andere Stimme?
+- Fun Sounds wenn ohne Karte die Buttons gedrückt werden
+- Weitere Maßnahmen zur Steigerung der Akku Laufzeit
+    - Kartenleser mit Interrupts, dann muss er nicht mehr gepollt werden
+      (dazu muss das Software Serial für den MP3 Player auf andere Pins)
