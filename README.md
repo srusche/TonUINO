@@ -21,10 +21,12 @@ Stand 26.12.2019
     - Nach 20 Minuten wird der DFPlayerMini in den Sleep Modus versetzt
     - Weiterhin erfolgt die Abfrage des Kartenlesers nur noch alle 1,5 s
 - Refactoring der Software begonnen
+- Abbruch des Anlernens durch Wegnehmen der Karte möglich
+Stand 29.12.2019
+- Weiteres Refactoring, Player und Kartenleser in separaten Files
+- Ansagen beim Anlernen werden komplett ausgesprochen
 
 # Geplante Änderungen
-- Weiteres Refactoring, Player und Kartenleser in separaten Files
-    - Steigerung der Übersichtlichkeit
 - Abspielen ganzer Ordner über DFPlayerMini Methoden ohne nextTrack(),
   falls möglich auch Shuffle über das MP3 Modul
     - Kürzere Pausen zwischen den Tracks
