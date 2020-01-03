@@ -38,6 +38,8 @@ void playerSetupButtons()
   ignorePauseButton = false;
   ignoreUpButton = false;
   ignoreDownButton = false;
+  ignoreUpLongButton = false;
+  ignoreDownLongButton = false;
   
   pinMode(PIN_BTN_PLAY, INPUT_PULLUP);
   pinMode(PIN_BTN_UP, INPUT_PULLUP);
@@ -55,10 +57,10 @@ void setupPlayer()
   playMode = 0;
   playFile = 0;
 
-  // Zufallsgenerator initialisieren
+  // init random generator
   randomSeed(analogRead(A0));
 
-  // Busy Pin
+  // mp3 module busy Pin
   pinMode(PIN_MP3_BUSY, INPUT);
   
 
@@ -76,14 +78,13 @@ void loopPlayer()
   // to be handled without interrupts
   mp3.loop();
 
+  // handle buttons
+  pauseButton.read();
+  upButton.read();
+  downButton.read();
+
   if (hasCard) {
   
-    // Buttons werden nun über JS_Button gehandelt, dadurch kann jede Taste
-    // doppelt belegt werden
-    pauseButton.read();
-    upButton.read();
-    downButton.read();
-
     if (pauseButton.wasReleased()) {
       if (ignorePauseButton == false) {
         if (isPlaying()) {
@@ -95,11 +96,10 @@ void loopPlayer()
         }
       }
       ignorePauseButton = false;
-    } else if (pauseButton.pressedFor(LONG_PRESS) &&
-               ignorePauseButton == false) {
-      if (isPlaying())
+    } else if (pauseButton.pressedFor(LONG_PRESS) && ignorePauseButton == false) {
+      if (isPlaying()) {
         mp3.playAdvertisement(currentTrack);
-      else {
+      } else {
         playerReady = false;
         mp3.playMp3FolderTrack(800);
         Serial.println(F("Reset card..."));
@@ -115,32 +115,65 @@ void loopPlayer()
       if (volume < PLAYER_VOL_MAX) {
         Serial.println(F("Volume Up"));
         mp3.setVolume(++volume); 
-      } else {
+      } else if (!ignoreUpLongButton) {
         Serial.println(F("Volume MAX"));
+        mp3.playAdvertisement(404);
+        ignoreUpLongButton = true;
       }
       ignoreUpButton = true;
     } else if (upButton.wasReleased()) {
-      if (!ignoreUpButton)
+      if (!ignoreUpButton) {
         nextTrack(random(65536));
-      else
+      } else {
         ignoreUpButton = false;
+        ignoreUpLongButton = false;
+      }
     }
 
     if (downButton.pressedFor(LONG_PRESS)) {
       if (volume > PLAYER_VOL_MIN) {
         Serial.println(F("Volume Down"));
         mp3.setVolume(--volume);
-      } else {
+      } else if (!ignoreDownLongButton) {
         Serial.println(F("Volume MIN"));
+        mp3.playAdvertisement(404);
+        ignoreDownLongButton = true;
       }
       ignoreDownButton = true;
     } else if (downButton.wasReleased()) {
-      if (!ignoreDownButton)
+      if (!ignoreDownButton) {
         previousTrack();
-      else
+      } else {
         ignoreDownButton = false;
+        ignoreDownLongButton = false;
+      }
     }
     // Ende der Buttons
+
+  } else {
+    // no card
+
+#ifdef SOUND_BOARD    
+    if (pauseButton.wasPressed()) {
+      powerWakeUp();
+      mp3.playMp3FolderTrack(1000);
+      waitPlaybackEnd();
+      playerReady = false;
+      powerTimerEnable();
+    } else if (downButton.wasPressed()) {
+      powerWakeUp();
+      mp3.playMp3FolderTrack(1001);
+      waitPlaybackEnd();
+      playerReady = false;
+      powerTimerEnable();
+    } else if (upButton.wasPressed()) {
+      powerWakeUp();
+      mp3.playMp3FolderTrack(1002);
+      waitPlaybackEnd();
+      playerReady = false;
+      powerTimerEnable();
+    }
+#endif
 
   }
 }
@@ -159,6 +192,10 @@ static void nextTrack(uint16_t track) {
   if (playerReady == false) {
     // Wenn eine neue Karte angelernt wird soll das Ende eines Tracks nicht
     // verarbeitet werden
+    return;
+  }
+
+  if (!hasCard) {
     return;
   }
 
@@ -284,6 +321,17 @@ void waitMilliseconds(uint16_t msWait)
   }
 }
 
+void waitPlaybackEnd()
+{
+  if (!isPlaying()) {
+    // maybe playback did not start yet
+    waitMilliseconds(1000);
+  }
+  do {
+    waitMilliseconds(10);
+  } while (isPlaying());
+}
+
 
 /**
  * Called when RFID Card is detected
@@ -361,6 +409,10 @@ void onNewCard()
   } else if (cardCurrent.mode == pmAudioBook) {
 
     currentTrack = EEPROM.read(cardCurrent.folder);
+    if (currentTrack < 1 || currentTrack > numTracksInFolder) {
+      currentTrack = 1;
+      EEPROM.write(cardCurrent.folder, currentTrack);
+    }
     Serial.print(F("Mode Audio Book -> Play folder from saved progress: "));
     Serial.println(currentTrack);
     powerWakeUp();

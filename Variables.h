@@ -52,7 +52,9 @@ class Mp3Notify {
 
 bool ignorePauseButton;
 bool ignoreUpButton;
+bool ignoreUpLongButton;
 bool ignoreDownButton;
+bool ignoreDownLongButton;
 
 
 
