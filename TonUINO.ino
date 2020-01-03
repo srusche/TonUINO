@@ -31,8 +31,8 @@ Button downButton(PIN_BTN_DOWN);
 void setup()
 {
 
-  Serial.begin(115200); // Es gibt ein paar Debug Ausgaben über die serielle
-                        // Schnittstelle
+  // Serial debug output
+  Serial.begin(115200);
   Serial.println(F("TonUINO Version 2.0"));
   Serial.println(F("(c) Thorsten Voß"));
 
