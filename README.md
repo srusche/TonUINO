@@ -22,6 +22,7 @@ Stand 26.12.2019
     - Weiterhin erfolgt die Abfrage des Kartenlesers nur noch alle 1,5 s
 - Refactoring der Software begonnen
 - Abbruch des Anlernens durch Wegnehmen der Karte möglich
+
 Stand 29.12.2019
 - Weiteres Refactoring, Player und Kartenleser in separaten Files
 - Ansagen beim Anlernen werden komplett ausgesprochen
