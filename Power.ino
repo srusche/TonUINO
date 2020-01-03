@@ -18,6 +18,7 @@ void loopPower()
 {
   if (!powerState && powerSleepTime != 0 && millis() > powerSleepTime) {
     Serial.println(F("Power: Enter sleep mode..."));
+    mp3.setVolume(0);
     mp3.sleep();
     powerTimerDisable();
     powerState = POWER_SLEEPING;
@@ -46,6 +47,7 @@ void powerWakeUp()
   if (powerState != POWER_AWAKE) {
     Serial.println(F("Power: Wake up from sleep mode..."));
     mp3.setPlaybackSource(DfMp3_PlaySource_Sd);
+    mp3.setVolume(PLAYER_VOL_START);
     powerState = POWER_AWAKE;
   }
 }
