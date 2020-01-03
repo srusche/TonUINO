@@ -25,15 +25,17 @@ Stand 26.12.2019
 
 Stand 29.12.2019
 - Weiteres Refactoring, Player und Kartenleser in separaten Files
-- Ansagen beim Anlernen werden komplett ausgesprochen
+- Ansagen beim Anlernen werden komplett ausgesprochen  
+
+Stand 03.01.2020
+- Buttons als Sound Board wenn Karte weg  
+
 
 # Geplante Änderungen
-- Abspielen ganzer Ordner über DFPlayerMini Methoden ohne nextTrack(),
-  falls möglich auch Shuffle über das MP3 Modul
-    - Kürzere Pausen zwischen den Tracks
-    - Vereinfachung des Codes
-- Weitere Ansagen (z. B. beim Einschalten), ggf. andere Stimme?
-- Fun Sounds wenn ohne Karte die Buttons gedrückt werden
 - Weitere Maßnahmen zur Steigerung der Akku Laufzeit
     - Kartenleser mit Interrupts, dann muss er nicht mehr gepollt werden
       (dazu muss das Software Serial für den MP3 Player auf andere Pins)
+- Weitere Ansagen (z. B. beim Einschalten), ggf. andere Stimme?
+- Abspielen ganzer Ordner über DFPlayerMini Methoden ohne nextTrack()
+    - Kürzere Pausen zwischen den Tracks
+    - Vereinfachung des Codes
