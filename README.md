@@ -30,6 +30,11 @@ Stand 29.12.2019
 Stand 03.01.2020
 - Buttons als Sound Board wenn Karte weg  
 
+Stand 04.01.2019
+- Separate Timeouts für MP3-Modul und Kartenleser
+- Durch deaktivieren des Kartenlesers bei Pause und ohne Karte in Reichweite kann die Leistungsaufnahme um etwa 40 % reduziert werden. Intenso S10000 schaltet dann bereits ab.
+- Optimierung der Lautstärke Regelung (zunehmende Geschwindigkeit der Änderung)
+
 
 # Geplante Änderungen
 - Weitere Maßnahmen zur Steigerung der Akku Laufzeit

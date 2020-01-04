@@ -52,9 +52,9 @@ class Mp3Notify {
 
 bool ignorePauseButton;
 bool ignoreUpButton;
-bool ignoreUpLongButton;
 bool ignoreDownButton;
-bool ignoreDownLongButton;
+unsigned long volumeHoldTime;
+bool ignoreVolumeHold;
 
 
 
@@ -126,8 +126,10 @@ static bool lastCardWasUL;
 /**
  * Power Save
  */
-unsigned long powerSleepTime;
-bool powerState;
+unsigned long powerMp3SleepTime;
+bool powerMp3State;
+unsigned long powerCardSleepTime;
+bool powerCardState;
 
 #define POWER_AWAKE false
 #define POWER_SLEEPING true

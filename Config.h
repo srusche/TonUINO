@@ -2,7 +2,7 @@
  * JoniBOX, based on TonUINO
  * @see https://github.com/xfjx/TonUINO
  * @see https://www.voss.earth/tonuino/
- * 
+ *
  * Config
  */
 #ifndef CONFIG_H
@@ -54,10 +54,12 @@
 
 // POWER CONFIG
 
-//  After this time (ms) powersave will be enabled. During powersave mode
-//  - Mp3 module will be send to sleep mode (Pause position will be lost)
-//  - Card reader will be polled every 1500 ms (every 150 ms when awake)
-#define POWER_TIMEOUT 1200000 // 20 minutes 20 * 60 * 1000
+//  After this time (ms) mp3 module will be send to sleep mode (Pause position will be lost)
+#define POWER_TIMEOUT_MP3 1800000 // 30 minutes 30 * 60 * 1000
+
+// Card reader will be polled every 1500 ms (every 150 ms when awake)
+// and Antenna will be switched off without card after this timeout
+//#define POWER_TIMEOUT_CARD 300000 // 5 minutes = 5 * 60 * 1000
 
 
 #endif
