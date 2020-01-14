@@ -46,6 +46,13 @@ void playerSetupButtons()
   pinMode(PIN_BTN_UP, INPUT_PULLUP);
   pinMode(PIN_BTN_DOWN, INPUT_PULLUP);
 
+
+#ifdef SWAP_TRACK_VOLUME
+  Serial.println(F("Swap Track Volume active"));
+#else
+  Serial.println(F("Swap Track Volume inactive"));
+#endif
+
 }
 
 
@@ -113,6 +120,10 @@ void loopPlayer()
 
     if (!ignoreVolumeHold && upButton.pressedFor(volumeHoldTime)) {
 
+#ifdef SWAP_TRACK_VOLUME
+      nextTrack(random(65536));
+      ignoreVolumeHold = true;
+#else
       if (volumeHoldTime >= 5 * LONG_PRESS) {
         volumeHoldTime += 125;
       } else if (volumeHoldTime >= 3 * LONG_PRESS) {
@@ -132,13 +143,26 @@ void loopPlayer()
         mp3.playAdvertisement(404);
         ignoreVolumeHold = true;
       }
-      
+#endif      
       ignoreUpButton = true;
       
     } else if (upButton.wasReleased()) {
       
       if (!ignoreUpButton) {
+#ifdef SWAP_TRACK_VOLUME
+        if (volume < min(30, PLAYER_VOL_MAX)) {
+          volume++;
+          Serial.print(F("Volume Up "));
+          Serial.println(volume);
+          mp3.setVolume(volume); 
+        } else {
+          Serial.print(F("Volume MAX "));
+          Serial.println(volume);
+          mp3.playAdvertisement(404);
+        }
+#else
         nextTrack(random(65536));
+#endif
       } else {
         ignoreUpButton = false;
         ignoreVolumeHold = false;
@@ -147,6 +171,10 @@ void loopPlayer()
       
     } else if (!ignoreVolumeHold && downButton.pressedFor(volumeHoldTime)) {
 
+#ifdef SWAP_TRACK_VOLUME
+      previousTrack();
+      ignoreVolumeHold = true;
+#else
       if (volumeHoldTime >= 5 * LONG_PRESS) {
         volumeHoldTime += 125;
       } else if (volumeHoldTime >= 3 * LONG_PRESS) {
@@ -166,12 +194,26 @@ void loopPlayer()
         mp3.playAdvertisement(404);
         ignoreVolumeHold = true;
       }
+#endif
       ignoreDownButton = true;
       
     } else if (downButton.wasReleased()) {
-      
+
       if (!ignoreDownButton) {
+#ifdef SWAP_TRACK_VOLUME
+      if (volume > max(0, PLAYER_VOL_MIN)) {
+        volume--;
+        Serial.print(F("Volume Down "));
+        Serial.println(volume);
+        mp3.setVolume(volume);
+      } else {
+        Serial.print(F("Volume MIN "));
+        Serial.println(volume);
+        mp3.playAdvertisement(404);
+      }
+#else
         previousTrack();
+#endif
       } else {
         ignoreDownButton = false;
         ignoreVolumeHold = false;
