@@ -90,9 +90,9 @@ void loopPlayer()
       if (ignorePauseButton == false) {
         if (isPlaying()) {
           mp3.pause();
-          powerMp3TimerEnable();
+          powerTimerEnable();
         } else {
-          powerMp3WakeUp();
+          powerTimerDisable();
           mp3.start();
         }
       }
@@ -187,15 +187,15 @@ void loopPlayer()
 
 #ifdef SOUND_BOARD    
     if (pauseButton.wasPressed()) {
-      powerMp3WakeUp();
+      powerTimerDisable();
       mp3.playMp3FolderTrack(1000);
       playerReady = false;
     } else if (downButton.wasPressed()) {
-      powerMp3WakeUp();
+      powerTimerDisable();
       mp3.playMp3FolderTrack(1001);
       playerReady = false;
     } else if (upButton.wasPressed()) {
-      powerMp3WakeUp();
+      powerTimerDisable();
       mp3.playMp3FolderTrack(1002);
       playerReady = false;
     }
@@ -218,7 +218,7 @@ static void nextTrack(uint16_t track) {
   if (playerReady == false) {
     // Wenn eine neue Karte angelernt wird soll das Ende eines Tracks nicht
     // verarbeitet werden
-    powerMp3TimerEnable();
+    powerTimerEnable();
     return;
   }
 
@@ -229,7 +229,7 @@ static void nextTrack(uint16_t track) {
   if (playMode == pmRadioPlay) {
     
     Serial.println(F("Mode Radio Play (single) -> ignore nextTrack"));
-    powerMp3TimerEnable();
+    powerTimerEnable();
   
   } else if (playMode == pmAlbum) {
   
@@ -241,7 +241,7 @@ static void nextTrack(uint16_t track) {
     }
     Serial.print(F("Mode Album (continue, repeat all) -> nextTrack: "));
     Serial.println(currentTrack);
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(playFolder, currentTrack);    
   
   } else if (playMode == pmParty) {
@@ -253,13 +253,13 @@ static void nextTrack(uint16_t track) {
     if (currentTrack >= oldTrack) currentTrack++;
     Serial.print(F("Mode Party (shuffle) -> nextTrack: "));
     Serial.println(currentTrack);
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(playFolder, currentTrack);
   
   } else if (playMode == pmSingle) {
     
     Serial.println(F("Mode Single -> ignore nextTrack"));
-    powerMp3TimerEnable();
+    powerTimerEnable();
   
   } else if (playMode == pmAudioBook) {
     
@@ -267,7 +267,7 @@ static void nextTrack(uint16_t track) {
       currentTrack++;
       Serial.print(F("Mode Audio Book -> save progress -> nextTrack"));
       Serial.println(currentTrack);
-      powerMp3WakeUp();
+      powerTimerDisable();
       mp3.playFolderTrack(playFolder, currentTrack);
       // Save progress to EEPROM
       EEPROM.write(playFolder, currentTrack);
@@ -275,7 +275,7 @@ static void nextTrack(uint16_t track) {
       // Reset progress
       EEPROM.write(playFolder, 1);
       currentTrack = 1;
-      powerMp3TimerEnable();
+      powerTimerEnable();
     }
     
   }
@@ -288,7 +288,7 @@ static void previousTrack()
   if (playMode == pmRadioPlay) {
 
     Serial.println(F("Mode Radio Play -> Play track from the beginning"));
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(playFolder, currentTrack);
   
   } else if (playMode == 2) {
@@ -297,19 +297,19 @@ static void previousTrack()
     if (currentTrack > 1) {
       currentTrack--;
     }
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(playFolder, currentTrack);
   
   } else if (playMode == pmParty) {
   
     Serial.println(F("Mode Party -> Play track from the beginning"));
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(playFolder, currentTrack);
   
   } else if (playMode == pmSingle) {
   
     Serial.println(F("Mode Single -> Play track from the beginning"));
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(playFolder, currentTrack);
   
   } else if (playMode == pmAudioBook) {
@@ -318,7 +318,7 @@ static void previousTrack()
     if (currentTrack > 1) {
       currentTrack--;
     }
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(playFolder, currentTrack);
     // Save progress to EEPROM
     EEPROM.write(playFolder, currentTrack);
@@ -384,7 +384,7 @@ void onNewCard()
    
     // continue playback
     Serial.println(F("Card is back! Continue..."));
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.start(); 
     return;
         
@@ -407,14 +407,14 @@ void onNewCard()
     currentTrack = random(1, numTracksInFolder + 1);
     Serial.print(F("Mode Radio Play (shuffle, single) -> Play random track: "));
     Serial.println(currentTrack);
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(cardCurrent.folder, currentTrack);
   
   } else if (cardCurrent.mode == pmAlbum) {
   
     Serial.println(F("Mode Album (continue, repeat all) -> Play folder, track 1"));
     currentTrack = 1;
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(cardCurrent.folder, currentTrack);
 
   } else if (cardCurrent.mode == pmParty) {
@@ -422,7 +422,7 @@ void onNewCard()
     currentTrack = random(1, numTracksInFolder + 1);
     Serial.print(F("Mode Party (shuffle) -> Play random track from folder: "));
     Serial.println(currentTrack);
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(cardCurrent.folder, currentTrack);
   
   } else if (cardCurrent.mode == pmSingle) {
@@ -430,7 +430,7 @@ void onNewCard()
     currentTrack = cardCurrent.special;
     Serial.print(F("Mode Single -> Play file "));
     Serial.println(currentTrack);
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(cardCurrent.folder, currentTrack);
   
   } else if (cardCurrent.mode == pmAudioBook) {
@@ -442,7 +442,7 @@ void onNewCard()
     }
     Serial.print(F("Mode Audio Book -> Play folder from saved progress: "));
     Serial.println(currentTrack);
-    powerMp3WakeUp();
+    powerTimerDisable();
     mp3.playFolderTrack(cardCurrent.folder, currentTrack);
   
   }

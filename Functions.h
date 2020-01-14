@@ -64,14 +64,8 @@ void cardConfigStart();
 void setupPower();
 void loopPower();
 
-void powerMp3TimerEnable();
-void powerMp3TimerDisable();
-void powerMp3WakeUp();
-
-
-void powerCardTimerEnable(bool renew = false);
-void powerCardTimerDisable();
-void powerCardWakeUp();
+void powerTimerEnable();
+void powerTimerDisable();
 
 
 #endif

@@ -31,8 +31,13 @@
 #define PIN_CR_RST 9
 #define PIN_CR_SS 10
 
+//  led output
+//#define PIN_LED 5
 
 // BUTTON CONFIG
+
+//  swap short/long press function (track/volume)
+//#define SWAP_TRACK_VOLUME
 
 //  min time (ms) for long press actions
 #define LONG_PRESS 1000
@@ -55,11 +60,8 @@
 // POWER CONFIG
 
 //  After this time (ms) mp3 module will be send to sleep mode (Pause position will be lost)
-#define POWER_TIMEOUT_MP3 1800000 // 30 minutes 30 * 60 * 1000
-
-// Card reader will be polled every 1500 ms (every 150 ms when awake)
-// and Antenna will be switched off without card after this timeout
-//#define POWER_TIMEOUT_CARD 300000 // 5 minutes = 5 * 60 * 1000
+#define POWER_TIMEOUT 300000 // 5 minutes 5 * 60 * 1000
+#define POWER_LED_DIM 3
 
 
 #endif

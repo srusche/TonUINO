@@ -8,106 +8,95 @@
 
 void setupPower()
 {
-  powerMp3SleepTime = 0;
-  powerMp3State = POWER_AWAKE;
-
-  powerCardSleepTime = 0;
-  powerCardState = POWER_AWAKE;
-
-  powerMp3TimerEnable();
-  powerCardTimerEnable();
+#ifdef PIN_LED
+  pinMode(PIN_LED, OUTPUT);
+  powerLedBrightness = 64;
+  powerLedUp = true;
+  analogWrite(PIN_LED, powerLedBrightness);
+#endif
+  powerSleepTime = 0;
+ 
+  powerTimerEnable();
 }
 
 void loopPower()
 {
-#ifdef POWER_TIMEOUT_MP3
-  if (powerMp3State == POWER_AWAKE && powerMp3SleepTime != 0 && millis() > powerMp3SleepTime) {
-    Serial.println(F("Power MP3: Enter sleep mode..."));
-    mp3.setVolume(0);
-    mp3.sleep();
-    powerMp3TimerDisable();
-    powerMp3State = POWER_SLEEPING;
-  }
+#ifdef POWER_TIMEOUT
+  if (powerSleepTime != 0 && millis() > powerSleepTime) {
+    Serial.println(F("Power: Shutdown..."));
+
+#ifdef PIN_LED
+    analogWrite(PIN_LED, 0);
 #endif
 
-#ifdef POWER_TIMEOUT_CARD
-  if (powerCardState == POWER_AWAKE && !hasCard && powerCardSleepTime != 0 && millis() > powerCardSleepTime) {
-    Serial.println(F("Power Card: Antenna off..."));
     mfrc522.PCD_AntennaOff();
     mfrc522.PCD_SoftPowerDown();
-    powerCardTimerDisable();
-    powerCardState = POWER_SLEEPING;
+    mp3.sleep();
+
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    cli();  // Disable interrupts
+    sleep_mode();
+  
+  }
+#endif
+
+#ifdef PIN_LED
+    if (powerSleepTime > 0) {
+      powerLedFade();
+    } else if (powerLedBrightness != 255) {
+      powerLedBrightness = 255;
+      analogWrite(PIN_LED, powerLedBrightness);  
+    }
+#endif
+
+}
+
+void powerLedFade()
+{
+#ifdef PIN_LED
+  static uint16_t lastLedDim = 0;
+  uint16_t now = millis();
+
+  if (static_cast<uint16_t>(now - lastLedDim) >= 15) {
+
+    lastLedDim = now;
+
+    if (powerLedUp && powerLedBrightness >= 255 - POWER_LED_DIM) {
+      powerLedUp = false;
+    } else if (!powerLedUp && powerLedBrightness <= 16 + POWER_LED_DIM) {
+      powerLedUp = true;
+    }
+
+    if (powerLedUp) {
+      powerLedBrightness += POWER_LED_DIM;
+    } else {
+      powerLedBrightness -= POWER_LED_DIM;
+    }
+    
+    analogWrite(PIN_LED, powerLedBrightness);
+    
   }
 #endif
 }
 
-void powerMp3TimerEnable()
+void powerTimerEnable()
 {
-#ifdef POWER_TIMEOUT_MP3
-  powerMp3SleepTime = millis() + POWER_TIMEOUT_MP3;
-  Serial.print(F("Power MP3: Timer enabled "));
-  Serial.println(powerMp3SleepTime);
+#ifdef POWER_TIMEOUT
+  powerSleepTime = millis() + POWER_TIMEOUT;
+  Serial.print(F("Power: Timer enabled "));
+  Serial.println(powerSleepTime);
 #endif
 }
 
-void powerMp3TimerDisable()
+void powerTimerDisable()
 {
-#ifdef POWER_TIMEOUT_MP3
-  if (powerMp3SleepTime == 0) {
+#ifdef POWER_TIMEOUT
+  if (powerSleepTime == 0) {
     return;
   }
-  powerMp3SleepTime = 0;
-  Serial.println(F("Power MP3: Timer disabled"));
+  powerSleepTime = 0;
+  Serial.println(F("Power: Timer disabled"));
 #endif
 }
 
-void powerMp3WakeUp()
-{
-#ifdef POWER_TIMEOUT_MP3
-  powerMp3TimerDisable();
-  if (powerMp3State != POWER_AWAKE) {
-    Serial.println(F("Power MP3: Wake up from sleep mode..."));
-    mp3.setPlaybackSource(DfMp3_PlaySource_Sd);
-    mp3.setVolume(PLAYER_VOL_START);
-    powerMp3State = POWER_AWAKE;
-  }
-#endif
-}
-
-
-void powerCardTimerEnable(bool renew)
-{
-#ifdef POWER_TIMEOUT_CARD
-  if (!renew && powerCardSleepTime > 0) {
-    return;
-  }
-  powerCardSleepTime = millis() + POWER_TIMEOUT_CARD;
-  Serial.print(F("Power Card: Timer enabled "));
-  Serial.println(powerCardSleepTime);
-#endif
-}
-
-void powerCardTimerDisable()
-{
-#ifdef POWER_TIMEOUT_CARD
-  if (powerCardSleepTime == 0) {
-    return;
-  }
-  powerCardSleepTime = 0;
-  Serial.println(F("Power Card: Timer disabled"));
-#endif
-}
-
-void powerCardWakeUp()
-{
-#ifdef POWER_TIMEOUT_CARD
-  powerCardTimerDisable();
-  if (powerCardState != POWER_AWAKE) {
-    Serial.println(F("Power Card: Antenna on..."));
-    mfrc522.PCD_SoftPowerUp();
-    mfrc522.PCD_AntennaOn();
-    powerCardState = POWER_AWAKE;
-  }
-#endif
-}
 

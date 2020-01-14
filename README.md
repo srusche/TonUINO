@@ -35,12 +35,18 @@ Stand 04.01.2019
 - Durch deaktivieren des Kartenlesers bei Pause und ohne Karte in Reichweite kann die Leistungsaufnahme um etwa 40 % reduziert werden. Intenso S10000 schaltet dann bereits ab.
 - Optimierung der Lautstärke Regelung (zunehmende Geschwindigkeit der Änderung)
 
+Stand 14.01.2019
+- Zurück auf einen Timeout, Abschalten der Powerbank wird bewusst provoziert. Mit einem Taster (Öffner) lässt sich die Powerbank wieder reaktivieren.
+- LED Ausgang für den Taster. An beim abspielen, pulsiert wenn der Timeout läuft, aus wenn aus.
 
 # Geplante Änderungen
-- Weitere Maßnahmen zur Steigerung der Akku Laufzeit
-    - Kartenleser mit Interrupts, dann muss er nicht mehr gepollt werden
-      (dazu muss das Software Serial für den MP3 Player auf andere Pins)
+- Track und Volume Funktion per Config tauschbar machen 
 - Weitere Ansagen (z. B. beim Einschalten), ggf. andere Stimme?
 - Abspielen ganzer Ordner über DFPlayerMini Methoden ohne nextTrack()
     - Kürzere Pausen zwischen den Tracks
     - Vereinfachung des Codes
+- Weitere Maßnahmen zur Steigerung der Akku Laufzeit
+    - ~~Kartenleser mit Interrupts, dann muss er nicht mehr gepollt werden
+      (dazu muss das Software Serial für den MP3 Player auf andere Pins)~~
+      Hat im Test keinen nennenswerten Effekt gehabt
+    - Testen, wann die Powerbank geladen werden muss, wenn sie nur beim Abspielen eingeschaltet ist

@@ -199,32 +199,22 @@ void loopCardReader()
   static uint16_t lastCardPoll = 0;
   uint16_t now = millis();
 
-  uint16_t interval = powerCardState ? 1500 : 150;
-  
-  if (static_cast<uint16_t>(now - lastCardPoll) < interval) {
+  if (static_cast<uint16_t>(now - lastCardPoll) < 150) {
     return;
   }
   
   lastCardPoll = now;
-  if (powerCardState != POWER_AWAKE) {
-    mfrc522.PCD_SoftPowerUp();
-    mfrc522.PCD_AntennaOn();
-  }
+
   switch (pollCard()) {
     case PCS_NEW_CARD:
-      powerCardWakeUp();
       onNewCard();
       break;
     case PCS_CARD_GONE:
       mp3.pause();
-      powerMp3TimerEnable();  
-    default:
-      powerCardTimerEnable();  
+      powerTimerEnable();
+      break;  
   }
-  if (powerCardState != POWER_AWAKE) {
-    mfrc522.PCD_AntennaOff();
-    mfrc522.PCD_SoftPowerDown();
-  }
+
 }
 
 

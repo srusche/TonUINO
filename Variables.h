@@ -126,14 +126,9 @@ static bool lastCardWasUL;
 /**
  * Power Save
  */
-unsigned long powerMp3SleepTime;
-bool powerMp3State;
-unsigned long powerCardSleepTime;
-bool powerCardState;
-
-#define POWER_AWAKE false
-#define POWER_SLEEPING true
-
+unsigned long powerSleepTime;
+unsigned int powerLedBrightness;
+bool powerLedUp;
 
 #endif
 

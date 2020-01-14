@@ -12,7 +12,7 @@ int cardConfigMenu(int numberOfOptions, int startMessage, int messageOffset, boo
 
   // poll card only every 100ms
   
-  powerMp3WakeUp();
+  powerTimerDisable();
 
   if (startMessage != 0) {
     mp3.playMp3FolderTrack(startMessage);

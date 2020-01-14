@@ -9,6 +9,7 @@
 #include <JC_Button.h>
 #include <MFRC522.h>
 #include <SoftwareSerial.h>
+#include <avr/sleep.h>
 #include "Config.h"
 #include "Variables.h"
 #include "Functions.h"
