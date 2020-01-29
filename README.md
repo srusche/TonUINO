@@ -42,6 +42,7 @@ Stand 14.01.2019
 
 Stand 29.01.2019
 - Initialisierung des Zufallsgenerators repariert
+- Party Modus (Zufallswiedergabe) verbessert: Merkt sich bereits gespielte Tracks und vermeidet Wiederholungen, bis jeder Track aus dem Ordner gespielt wurde
 
 
 # Geplante Änderungen

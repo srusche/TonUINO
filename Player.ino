@@ -288,11 +288,7 @@ static void nextTrack(uint16_t track) {
   
   } else if (playMode == pmParty) {
   
-    uint16_t oldTrack = currentTrack;
-    // random's upper bound is excluded so we shuffle with one track too few
-    currentTrack = random(1, numTracksInFolder);
-    // that way we exclude the previously played track
-    if (currentTrack >= oldTrack) currentTrack++;
+    currentTrack = playerShuffleTrack();
     Serial.print(F("Mode Party (shuffle) -> nextTrack: "));
     Serial.println(currentTrack);
     powerTimerDisable();
@@ -460,8 +456,9 @@ void onNewCard()
     mp3.playFolderTrack(cardCurrent.folder, currentTrack);
 
   } else if (cardCurrent.mode == pmParty) {
-    
-    currentTrack = random(1, numTracksInFolder + 1);
+
+    playerShuffleInit();
+    currentTrack = playerShuffleTrack();
     Serial.print(F("Mode Party (shuffle) -> Play random track from folder: "));
     Serial.println(currentTrack);
     powerTimerDisable();
@@ -491,5 +488,38 @@ void onNewCard()
   
 }
 
+// reset list of unplayed tracks
+void playerShuffleInit()
+{
+  // we support track 1 - 255 per folder
+  for (uint8_t i = 0; i < 255; i++) {
+    // each playable position is marked true
+    playerShuffleUnplayed[i] = i < numTracksInFolder;
+  }
+  // remember remaining tracks
+  playerShuffleLeft = numTracksInFolder;
 
+  Serial.println(F("Reset list of unplayed tracks"));
+}
+
+uint8_t playerShuffleTrack()
+{
+  if (playerShuffleLeft == 0) {
+    // reset list of unplayed tracks
+    playerShuffleInit();
+  }
+  uint8_t listOffset = random(1, playerShuffleLeft + 1);
+  for (uint8_t i = 0; i < 255; i++) {
+    if (playerShuffleUnplayed[i]) {
+      listOffset--;
+      if (listOffset == 0) {
+        playerShuffleUnplayed[i] = false;
+        playerShuffleLeft--;
+        Serial.print(F("shuffle, remaining tracks: "));
+        Serial.println(playerShuffleLeft);
+        return i + 1;
+      }
+    }
+  }
+}
 

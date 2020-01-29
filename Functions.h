@@ -31,6 +31,10 @@ bool isPlaying();
 void waitMilliseconds(uint16_t msWait);
 void onNewCard();
 
+void playerShuffleInit();
+uint8_t playerShuffleTrack();
+
+
 /**
  * NFC Card Reader
  */

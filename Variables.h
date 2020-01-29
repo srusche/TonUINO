@@ -70,6 +70,8 @@ bool playerReady;
 uint8_t playFolder;
 uint8_t playMode;
 uint8_t playFile;
+bool playerShuffleUnplayed[255];
+uint8_t playerShuffleLeft;
 
 
 /**
