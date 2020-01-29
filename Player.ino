@@ -58,15 +58,15 @@ void playerSetupButtons()
 
 void setupPlayer()
 {
+  // init random generator
+  randomSeed(analogRead(A0));
+  
   playerSetupButtons();
   
   playerReady = false;
   playFolder = 0;
   playMode = 0;
   playFile = 0;
-
-  // init random generator
-  randomSeed(analogRead(A0));
 
   // mp3 module busy Pin
   pinMode(PIN_MP3_BUSY, INPUT);

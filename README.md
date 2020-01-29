@@ -38,7 +38,10 @@ Stand 04.01.2019
 Stand 14.01.2019
 - Zurück auf einen Timeout, Abschalten der Powerbank wird bewusst provoziert. Mit einem Taster (Öffner) lässt sich die Powerbank wieder reaktivieren.
 - LED Ausgang für den Taster. An beim abspielen, pulsiert wenn der Timeout läuft, aus wenn aus.
-- Track und Volume Funktion können per Config getauscht werden 
+- Track und Volume Funktion können per Config getauscht werden
+
+Stand 29.01.2019
+- Initialisierung des Zufallsgenerators repariert
 
 
 # Geplante Änderungen
