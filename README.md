@@ -45,7 +45,8 @@ Stand 29.01.2020
 - Party Modus (Zufallswiedergabe) verbessert: Merkt sich bereits gespielte Tracks und vermeidet Wiederholungen, bis jeder Track aus dem Ordner gespielt wurde
 
 Stand 01.02.2020
-- Hörspiel Modus (Zufallswiedergabe) verbessert: Am Ende des Tracks wird ein neuer zufälliger Track geladen. Merkt sich bereits gespielte Tracks wie im Party Modus.
+- Hörspiel Modus (Zufallswiedergabe) verbessert: Spielt einen neuen Track, wenn der vorherige zu Ende war und man die Karte neu auflegt oder Pause drückt. Merkt sich bereits gespielte Tracks wie im Party Modus.
+- Karte löschen komplizierter gemacht (Kindersicherung). Wenn pausiert (Karte liegt auf): Pause Button 8 s gedrückt halten, dann + Button kurz drücken. Wenn die Ansage kommt, Buttons los lassen.
 
 
 # Geplante Änderungen
