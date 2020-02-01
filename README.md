@@ -30,19 +30,22 @@ Stand 29.12.2019
 Stand 03.01.2020
 - Buttons als Sound Board wenn Karte weg  
 
-Stand 04.01.2019
+Stand 04.01.2020
 - Separate Timeouts für MP3-Modul und Kartenleser
 - Durch deaktivieren des Kartenlesers bei Pause und ohne Karte in Reichweite kann die Leistungsaufnahme um etwa 40 % reduziert werden. Intenso S10000 schaltet dann bereits ab.
 - Optimierung der Lautstärke Regelung (zunehmende Geschwindigkeit der Änderung)
 
-Stand 14.01.2019
+Stand 14.01.2020
 - Zurück auf einen Timeout, Abschalten der Powerbank wird bewusst provoziert. Mit einem Taster (Öffner) lässt sich die Powerbank wieder reaktivieren.
 - LED Ausgang für den Taster. An beim abspielen, pulsiert wenn der Timeout läuft, aus wenn aus.
 - Track und Volume Funktion können per Config getauscht werden
 
-Stand 29.01.2019
+Stand 29.01.2020
 - Initialisierung des Zufallsgenerators repariert
 - Party Modus (Zufallswiedergabe) verbessert: Merkt sich bereits gespielte Tracks und vermeidet Wiederholungen, bis jeder Track aus dem Ordner gespielt wurde
+
+Stand 01.02.2020
+- Hörspiel Modus (Zufallswiedergabe) verbessert: Am Ende des Tracks wird ein neuer zufälliger Track geladen. Merkt sich bereits gespielte Tracks wie im Party Modus.
 
 
 # Geplante Änderungen

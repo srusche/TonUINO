@@ -269,9 +269,19 @@ static void nextTrack(uint16_t track) {
   }
 
   if (playMode == pmRadioPlay) {
-    
-    Serial.println(F("Mode Radio Play (single) -> ignore nextTrack"));
-    powerTimerEnable();
+
+    if (isPlaying()) {
+      // nextTrack called by button press while playing
+      Serial.println(F("Mode Radio Play (single) -> ignore nextTrack"));
+    } else {
+      currentTrack = playerShuffleTrack();
+      Serial.print(F("Mode Radio Play (single) -> prepare nextTrack: "));
+      Serial.println(currentTrack);
+      mp3.playFolderTrack(playFolder, currentTrack);
+      delay(100);
+      mp3.pause();
+      powerTimerEnable();
+    }
   
   } else if (playMode == pmAlbum) {
   
@@ -441,8 +451,9 @@ void onNewCard()
   Serial.println(cardCurrent.folder);
 
   if (cardCurrent.mode == pmRadioPlay) {
-    
-    currentTrack = random(1, numTracksInFolder + 1);
+
+    playerShuffleInit();
+    currentTrack = playerShuffleTrack();
     Serial.print(F("Mode Radio Play (shuffle, single) -> Play random track: "));
     Serial.println(currentTrack);
     powerTimerDisable();
