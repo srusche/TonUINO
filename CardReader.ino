@@ -110,7 +110,10 @@ void writeCard(nfcTagObject nfcTag)
     Serial.print(F("PCD_Authenticate() failed: "));
     Serial.println(mfrc522.GetStatusCodeName(status));
     mp3.playMp3FolderTrack(401);
-    waitMilliseconds(2000);
+    waitMilliseconds(1000);
+    do {
+      waitMilliseconds(10);
+    } while (isPlaying());
     return;
   }
 
@@ -129,7 +132,10 @@ void writeCard(nfcTagObject nfcTag)
     mp3.playMp3FolderTrack(400);
   }
   Serial.println();
-  waitMilliseconds(2000);
+  waitMilliseconds(1000);
+  do {
+    waitMilliseconds(10);
+  } while (isPlaying());
 }
 
 
