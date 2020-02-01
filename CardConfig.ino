@@ -135,6 +135,15 @@ int cardConfigMenu(int numberOfOptions, int startMessage, int messageOffset, boo
 
 void cardConfigReset()
 {
+  Serial.println(F("Card config reset..."));
+  mp3.playMp3FolderTrack(800);
+  waitMilliseconds(1000);
+  do {
+    pauseButton.read();
+    upButton.read();
+    downButton.read();
+    waitMilliseconds(10);
+  } while (isPlaying());
   
   do {
     pauseButton.read();

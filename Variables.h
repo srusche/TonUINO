@@ -64,6 +64,7 @@ bool ignoreVolumeHold;
 
 uint16_t numTracksInFolder;
 uint16_t currentTrack;
+uint16_t finishedTrack;
 uint8_t volume;
 
 bool playerReady;

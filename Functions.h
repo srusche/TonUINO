@@ -27,6 +27,7 @@ static void nextTrack(uint16_t track);
 static void previousTrack();
 
 bool isPlaying();
+void playerStart();
 
 void waitMilliseconds(uint16_t msWait);
 void onNewCard();

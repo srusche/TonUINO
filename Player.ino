@@ -59,6 +59,7 @@ void playerSetupButtons()
 void setupPlayer()
 {
   // init random generator
+  pinMode(A0, INPUT);
   randomSeed(analogRead(A0));
   
   playerSetupButtons();
@@ -99,57 +100,38 @@ void loopPlayer()
           mp3.pause();
           powerTimerEnable();
         } else {
-          powerTimerDisable();
-          mp3.start();
+          playerStart();
         }
       }
       ignorePauseButton = false;
-    } else if (pauseButton.pressedFor(LONG_PRESS) && ignorePauseButton == false) {
-      if (isPlaying()) {
+    } else if (ignorePauseButton == false) {
+      if (isPlaying() && pauseButton.pressedFor(LONG_PRESS)) {
         mp3.playAdvertisement(currentTrack);
-      } else {
+        ignorePauseButton = true;     
+      } else if (pauseButton.pressedFor(8000) && upButton.wasPressed()) {
         playerReady = false;
-        mp3.playMp3FolderTrack(800);
-        Serial.println(F("Reset card..."));
         cardConfigReset();
         mfrc522.PICC_HaltA();
         mfrc522.PCD_StopCrypto1();
+        ignorePauseButton = true;
       }
-      ignorePauseButton = true;
     }
 
-    if (!ignoreVolumeHold && upButton.pressedFor(volumeHoldTime)) {
+    if (!pauseButton.isPressed()) {
+      if (!ignoreVolumeHold && upButton.pressedFor(volumeHoldTime)) {
 
 #ifdef SWAP_TRACK_VOLUME
-      nextTrack(random(65536));
-      ignoreVolumeHold = true;
-#else
-      if (volumeHoldTime >= 5 * LONG_PRESS) {
-        volumeHoldTime += 125;
-      } else if (volumeHoldTime >= 3 * LONG_PRESS) {
-        volumeHoldTime += 250;
-      } else {
-        volumeHoldTime += 500;
-      }
-      
-      if (volume < min(30, PLAYER_VOL_MAX)) {
-        volume++;
-        Serial.print(F("Volume Up "));
-        Serial.println(volume);
-        mp3.setVolume(volume); 
-      } else {
-        Serial.print(F("Volume MAX "));
-        Serial.println(volume);
-        mp3.playAdvertisement(404);
+        nextTrack(random(65536));
         ignoreVolumeHold = true;
-      }
-#endif      
-      ignoreUpButton = true;
-      
-    } else if (upButton.wasReleased()) {
-      
-      if (!ignoreUpButton) {
-#ifdef SWAP_TRACK_VOLUME
+#else
+        if (volumeHoldTime >= 5 * LONG_PRESS) {
+          volumeHoldTime += 125;
+        } else if (volumeHoldTime >= 3 * LONG_PRESS) {
+          volumeHoldTime += 250;
+        } else {
+          volumeHoldTime += 500;
+        }
+        
         if (volume < min(30, PLAYER_VOL_MAX)) {
           volume++;
           Serial.print(F("Volume Up "));
@@ -159,65 +141,84 @@ void loopPlayer()
           Serial.print(F("Volume MAX "));
           Serial.println(volume);
           mp3.playAdvertisement(404);
+          ignoreVolumeHold = true;
+        }
+#endif      
+        ignoreUpButton = true;
+      
+      } else if (upButton.wasReleased()) {
+      
+        if (!ignoreUpButton) {
+#ifdef SWAP_TRACK_VOLUME
+          if (volume < min(30, PLAYER_VOL_MAX)) {
+            volume++;
+            Serial.print(F("Volume Up "));
+            Serial.println(volume);
+            mp3.setVolume(volume); 
+          } else {
+            Serial.print(F("Volume MAX "));
+            Serial.println(volume);
+            mp3.playAdvertisement(404);
+          }
+#else
+          nextTrack(random(65536));
+#endif
+        } else {
+          ignoreUpButton = false;
+          ignoreVolumeHold = false;
+          volumeHoldTime = LONG_PRESS;
+        }
+      
+      } else if (!ignoreVolumeHold && downButton.pressedFor(volumeHoldTime)) {
+
+#ifdef SWAP_TRACK_VOLUME
+        previousTrack();
+        ignoreVolumeHold = true;
+#else
+        if (volumeHoldTime >= 5 * LONG_PRESS) {
+          volumeHoldTime += 125;
+        } else if (volumeHoldTime >= 3 * LONG_PRESS) {
+          volumeHoldTime += 250;
+        } else {
+          volumeHoldTime += 500;
+        }
+      
+        if (volume > max(0, PLAYER_VOL_MIN)) {
+          volume--;
+          Serial.print(F("Volume Down "));
+          Serial.println(volume);
+          mp3.setVolume(volume);
+        } else {
+          Serial.print(F("Volume MIN "));
+          Serial.println(volume);
+          mp3.playAdvertisement(404);
+          ignoreVolumeHold = true;
+        }
+#endif
+        ignoreDownButton = true;
+      
+      } else if (downButton.wasReleased()) {
+
+        if (!ignoreDownButton) {
+#ifdef SWAP_TRACK_VOLUME
+        if (volume > max(0, PLAYER_VOL_MIN)) {
+          volume--;
+          Serial.print(F("Volume Down "));
+          Serial.println(volume);
+          mp3.setVolume(volume);
+        } else {
+          Serial.print(F("Volume MIN "));
+          Serial.println(volume);
+          mp3.playAdvertisement(404);
         }
 #else
-        nextTrack(random(65536));
+          previousTrack();
 #endif
-      } else {
-        ignoreUpButton = false;
-        ignoreVolumeHold = false;
-        volumeHoldTime = LONG_PRESS;
-      }
-      
-    } else if (!ignoreVolumeHold && downButton.pressedFor(volumeHoldTime)) {
-
-#ifdef SWAP_TRACK_VOLUME
-      previousTrack();
-      ignoreVolumeHold = true;
-#else
-      if (volumeHoldTime >= 5 * LONG_PRESS) {
-        volumeHoldTime += 125;
-      } else if (volumeHoldTime >= 3 * LONG_PRESS) {
-        volumeHoldTime += 250;
-      } else {
-        volumeHoldTime += 500;
-      }
-      
-      if (volume > max(0, PLAYER_VOL_MIN)) {
-        volume--;
-        Serial.print(F("Volume Down "));
-        Serial.println(volume);
-        mp3.setVolume(volume);
-      } else {
-        Serial.print(F("Volume MIN "));
-        Serial.println(volume);
-        mp3.playAdvertisement(404);
-        ignoreVolumeHold = true;
-      }
-#endif
-      ignoreDownButton = true;
-      
-    } else if (downButton.wasReleased()) {
-
-      if (!ignoreDownButton) {
-#ifdef SWAP_TRACK_VOLUME
-      if (volume > max(0, PLAYER_VOL_MIN)) {
-        volume--;
-        Serial.print(F("Volume Down "));
-        Serial.println(volume);
-        mp3.setVolume(volume);
-      } else {
-        Serial.print(F("Volume MIN "));
-        Serial.println(volume);
-        mp3.playAdvertisement(404);
-      }
-#else
-        previousTrack();
-#endif
-      } else {
-        ignoreDownButton = false;
-        ignoreVolumeHold = false;
-        volumeHoldTime = LONG_PRESS;
+        } else {
+          ignoreDownButton = false;
+          ignoreVolumeHold = false;
+          volumeHoldTime = LONG_PRESS;
+        }
       }
     }
     // Ende der Buttons
@@ -256,6 +257,7 @@ static void nextTrack(uint16_t track) {
     return;
   }
   _lastTrackFinished = track;
+  finishedTrack = currentTrack;
    
   if (playerReady == false) {
     // Wenn eine neue Karte angelernt wird soll das Ende eines Tracks nicht
@@ -270,16 +272,8 @@ static void nextTrack(uint16_t track) {
 
   if (playMode == pmRadioPlay) {
 
-    if (isPlaying()) {
-      // nextTrack called by button press while playing
-      Serial.println(F("Mode Radio Play (single) -> ignore nextTrack"));
-    } else {
-      currentTrack = playerShuffleTrack();
-      Serial.print(F("Mode Radio Play (single) -> prepare nextTrack: "));
-      Serial.println(currentTrack);
-      mp3.playFolderTrack(playFolder, currentTrack);
-      delay(100);
-      mp3.pause();
+    Serial.println(F("Mode Radio Play (single) -> ignore nextTrack"));
+    if (!isPlaying()) {
       powerTimerEnable();
     }
   
@@ -307,7 +301,9 @@ static void nextTrack(uint16_t track) {
   } else if (playMode == pmSingle) {
     
     Serial.println(F("Mode Single -> ignore nextTrack"));
-    powerTimerEnable();
+    if (!isPlaying()) {
+      powerTimerEnable();
+    }
   
   } else if (playMode == pmAudioBook) {
     
@@ -321,9 +317,17 @@ static void nextTrack(uint16_t track) {
       EEPROM.write(playFolder, currentTrack);
     } else {
       // Reset progress
+      Serial.print(F("Mode Audio Book -> reset progress"));
       EEPROM.write(playFolder, 1);
       currentTrack = 1;
-      powerTimerEnable();
+      if (isPlaying()) {
+        Serial.println(F(" -> restart"));
+        powerTimerDisable();
+        mp3.playFolderTrack(playFolder, currentTrack);  
+      } else {
+        Serial.println(F(" "));
+        powerTimerEnable();
+      }
     }
     
   }
@@ -407,6 +411,20 @@ void waitPlaybackEnd()
   } while (isPlaying());
 }
 
+void playerStart()
+{
+  powerTimerDisable();
+  if (playMode == pmRadioPlay && finishedTrack == currentTrack) {
+    // track ended, play new track
+    currentTrack = playerShuffleTrack();
+    Serial.print(F("Mode Radio Play (shuffle, single), previous track ended -> Play new random track: "));
+    Serial.println(currentTrack);
+    mp3.playFolderTrack(cardCurrent.folder, currentTrack);
+  } else {
+    mp3.start();
+  }
+}
+
 
 /**
  * Called when RFID Card is detected
@@ -429,11 +447,10 @@ void onNewCard()
   }
 
   if (!isPlaying() && playerReady == true && playFolder == cardCurrent.folder && playMode == cardCurrent.mode && playFile == cardCurrent.special) {
-   
+
     // continue playback
     Serial.println(F("Card is back! Continue..."));
-    powerTimerDisable();
-    mp3.start(); 
+    playerStart();
     return;
         
   }
@@ -445,6 +462,7 @@ void onNewCard()
   playFile = cardCurrent.special;
       
   _lastTrackFinished = 0;
+  finishedTrack = 0;
   numTracksInFolder = mp3.getFolderTrackCount(cardCurrent.folder);
   Serial.print(numTracksInFolder);
   Serial.print(F(" Files in Folder "));
